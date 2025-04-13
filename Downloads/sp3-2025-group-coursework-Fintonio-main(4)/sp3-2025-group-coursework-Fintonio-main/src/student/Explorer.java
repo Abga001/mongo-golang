@@ -9,6 +9,7 @@ import java.util.*;
 
 public class Explorer {
 
+    // Explore method to find the orb
     public void explore(ExplorationState state) {
         Set<Long> visited = new HashSet<>();
         Stack<Long> path = new Stack<>();
@@ -41,6 +42,7 @@ public class Explorer {
         }
     }
 
+    // Escape method to collect as much gold as possible and exit safely
     public void escape(EscapeState state) {
         Node current = state.getCurrentNode();
         Node exit = state.getExit();
@@ -58,6 +60,7 @@ public class Explorer {
             List<Node> bestPath = null;
             int bestValue = 0;
 
+            // Search for the best gold node to go to next
             for (Node node : state.getVertices()) {
                 if (visited.contains(node)) continue;
                 if (node.getTile().getGold() == 0) continue;
@@ -67,6 +70,7 @@ public class Explorer {
 
                 int totalCost = getPathCost(pathToGold) + getPathCost(pathToExit);
 
+                // Only consider nodes that can be reached and still escape
                 if (totalCost <= timeRemaining) {
                     int value = node.getTile().getGold();
                     if (value > bestValue) {
@@ -77,10 +81,12 @@ public class Explorer {
                 }
             }
 
+            // Break if no more reachable gold nodes
             if (bestGoldNode == null) {
                 break;
             }
 
+            // Follow the path to the selected gold node
             for (Node step : bestPath) {
                 if (!state.getCurrentNode().equals(step)) {
                     state.moveTo(step);
@@ -100,7 +106,7 @@ public class Explorer {
             state.pickUpGold();
         }
 
-        // Move to the exit
+        // Finally, move to the exit
         List<Node> exitPath = getShortestPath(state.getCurrentNode(), exit);
         for (Node step : exitPath) {
             if (!state.getCurrentNode().equals(step)) {
@@ -112,6 +118,7 @@ public class Explorer {
         }
     }
 
+    // Dijkstra's algorithm to compute shortest path between two nodes
     private List<Node> getShortestPath(Node start, Node goal) {
         Map<Node, Node> prev = new HashMap<>();
         Map<Node, Integer> dist = new HashMap<>();
@@ -134,6 +141,7 @@ public class Explorer {
             }
         }
 
+        // Reconstruct the path from start to goal
         LinkedList<Node> path = new LinkedList<>();
         for (Node at = goal; at != null; at = prev.get(at)) {
             path.addFirst(at);
@@ -142,6 +150,7 @@ public class Explorer {
         return path;
     }
 
+    // Calculates the total travel cost of a given path
     private int getPathCost(List<Node> path) {
         int cost = 0;
         for (int i = 1; i < path.size(); i++) {
